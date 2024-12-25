@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Side Navigation Bar</title>
+    <link rel="stylesheet" href="Sidenavbar.css" th:href="@{/css/Sidenavbar.css}" />
+</head>
+<body>
+<header th:fragment="Sidenav">
+    <div class="d-flex">
+        <!-- Side Navbar -->
+        <div class="side-navbar">
+            <a href="register">Register User</a>
+            <a href="getLoginpage">Login User</a>
+            <a id="pollWindow" href="/Polewindow" >Poll Window</a>
+            <a id="viewResult" href="/getresult">View Result</a>
+        </div>
+    </div>
+</header>
+</body>
+</html>

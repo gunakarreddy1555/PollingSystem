@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Vote</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="topnav.css" th:href="@{/css/topnav.css}" />
+    <link rel="stylesheet" href="Sidenavbar.css" th:href="@{/css/Sidenavbar.css}" />
+</head>
+<body>
+    <!-- Importing NavBar -->
+    <div th:insert="TopNav.html::topnav"></div>
+
+    <!-- Main Content with Sidebar and Right Content -->
+    <div class="container-fluid">
+        <div class="row w-100">
+            <!-- Sidebar Section -->
+            <div class="col-md-3">
+                <div th:insert="Sidenavbar.html::Sidenav"></div>
+            </div>
+
+            <!-- Right Content Section -->
+            <div class="col-md-9">
+                <div class="container">
+                    <h2>Vote for a Person</h2>
+                    <form id="voteForm">
+                        <div th:each="vote : ${allvotes}" class="vote-option">
+                            <input type="radio" name="vote" th:id="'vote' + ${vote.id}" th:value="${vote.id}">
+                            <label th:for="'vote' + ${vote.id}" th:text="${vote.partname}"></label>
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="submitVote" disabled>Submit Vote</button>
+                    </form>
+                    <div class="footer">
+                        <p>Thank you for participating in the voting process!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 Product Management System. All rights reserved.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const voteForm = document.getElementById('voteForm');
+        const submitVoteButton = document.getElementById('submitVote');
+
+        // Enable submit button only when a vote is selected
+        voteForm.addEventListener('change', function () {
+            const selectedVote = document.querySelector('input[name="vote"]:checked');
+            submitVoteButton.disabled = !selectedVote;
+        });
+
+        // Handle form submission with Ajax
+        voteForm.addEventListener('submit', function (event) {
+            event.preventDefault();
+            const selectedVote = document.querySelector('input[name="vote"]:checked');
+            if (selectedVote) {
+                const voteId = selectedVote.value;
+                const voteName = selectedVote.nextElementSibling.textContent.trim();
+
+                fetch('/submit-vote', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        voteId: voteId,
+                        voteName: voteName,
+                    }),
+                })
+                    .then((response) => response.text())
+                    .then((data) => {
+                        if (data === 'success') {
+                            alert('Thank you for your vote!');
+                            // Disable the form
+                            document.querySelectorAll('input[name="vote"]').forEach((input) => {
+                                input.disabled = true;
+                            });
+                            submitVoteButton.disabled = true;
+                        } else {
+                            alert('There was an error recording your vote. Please try again.');
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                        alert('An error occurred. Please try again.');
+                    });
+            }
+        });
+    </script>
+</body>
+</html>
